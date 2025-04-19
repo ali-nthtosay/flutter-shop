@@ -1,37 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/auth_controller.dart';
-import 'package:flutter_application_1/views/screens/Login_Screen.dart';
 import 'package:flutter_application_1/views/screens/main_screen.dart';
-import 'package:flutter_application_1/views/screens/register_screen.dart';
+import 'package:flutter_application_1/views/screens/auth_screens/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final AuthController _authController = AuthController();
 
   late String email;
+
   late String password;
 
+  bool _isLoading = false;
+
   loginUser(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     String res = await _authController.loginUser(email, password);
+
+    setState(() {
+      _isLoading = false; // Reset loading state after response
+    });
+
     if (res == 'success') {
-      Future.delayed(Duration.zero, () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('You are logged in')));
-      });
-      print('logged in');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('You are logged in')));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
-      print(res);
     }
   }
-
-  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -224,14 +237,24 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                         Center(
-                          child: Text(
-                            "Sign In",
-                            style: GoogleFonts.getFont(
-                              'Lato',
-                              color: const Color.fromARGB(255, 22, 1, 1),
-                              fontSize: 18,
-                            ),
-                          ),
+                          child:
+                              _isLoading
+                                  ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : Text(
+                                    "Sign In",
+                                    style: GoogleFonts.getFont(
+                                      'Lato',
+                                      color: const Color.fromARGB(
+                                        255,
+                                        22,
+                                        1,
+                                        1,
+                                      ),
+                                      fontSize: 18,
+                                    ),
+                                  ),
                         ),
                       ],
                     ),

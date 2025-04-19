@@ -61,6 +61,11 @@ flutter:
     - assets/images/email.png
     - assets/images/password.png
     - assets/images/username.png
+    - assets/icons/home.png
+    - assets/icons/love.png
+    - assets/icons/mart.png
+    - assets/icons/cart.png
+    - assets/icons/user.png
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

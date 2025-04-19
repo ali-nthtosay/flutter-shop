@@ -27,9 +27,16 @@ class AuthController {
       });
 
       response = "success";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        response = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        response = 'The account already exists for that email.';
+      } else {
+        response = e.message ?? response;
+      }
     } catch (e) {
-      print("Registration error: $e");
-      response = e.toString();
+      response = 'An error occurred. Please try again.';
     }
 
     return response;
@@ -41,9 +48,16 @@ class AuthController {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       res = "success";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        res = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        res = 'Wrong password provided.';
+      } else {
+        res = e.message ?? res;
+      }
     } catch (e) {
-      print("Login error: $e");
-      res = e.toString();
+      res = 'An error occurred. Try again.';
     }
 
     return res;

@@ -1,29 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/auth_controller.dart';
-import 'package:flutter_application_1/views/screens/Login_Screen.dart';
+import 'package:flutter_application_1/views/screens/auth_screens/Login_Screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  // create new user
   final AuthController _authController = AuthController();
-  late String email;
-  late String fullName;
-  late String password;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   registerUser(BuildContext context) async {
+    setState(() => _isLoading = true);
+
     String response = await _authController.registerNewUser(
-      email,
-      fullName,
-      password,
+      _emailController.text.trim(),
+      _nameController.text.trim(),
+      _passwordController.text.trim(),
     );
+
+    setState(() => _isLoading = false);
 
     if (response == "success") {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Congrats')));
-
-      Navigator.push(
+      ).showSnackBar(SnackBar(content: Text('Account created successfully!')));
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
@@ -34,27 +45,20 @@ class RegisterScreen extends StatelessWidget {
     }
   }
 
-  ///
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.95),
-
       body: Center(
-        // Centers the entire column
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(15.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Ensures it takes minimal space
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, // Aligns children center
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Login Your Account",
+                  "Create Your Account",
                   style: GoogleFonts.lato(
                     color: Colors.black38,
                     fontWeight: FontWeight.bold,
@@ -63,7 +67,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Explore The Worldaaaaa",
+                  "Explore The World",
                   style: GoogleFonts.lato(
                     color: Colors.black38,
                     fontSize: 14,
@@ -71,12 +75,14 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 Image.asset('assets/images/login.png', height: 200, width: 200),
+                SizedBox(height: 10),
+
+                /// Username Field
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
                     "Username",
-                    style: GoogleFonts.getFont(
-                      'Nunito Sans',
+                    style: GoogleFonts.nunitoSans(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.2,
@@ -84,16 +90,10 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 TextFormField(
-                  onChanged: (value) => fullName = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter your Username";
-                    } else {
-                      return null;
-                    }
-                  },
+                  controller: _nameController,
+                  validator:
+                      (value) => value!.isEmpty ? "Enter your username" : null,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -106,51 +106,32 @@ class RegisterScreen extends StatelessWidget {
                         height: 20,
                       ),
                     ),
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    labelText: "enter your Username",
-                    labelStyle: GoogleFonts.getFont(
-                      "Nunito Sans",
-                      fontSize: 14,
-                      letterSpacing: 0.1,
-                    ),
+                    labelText: "Enter your username",
                   ),
                 ),
                 SizedBox(height: 10),
+
+                /// Email Field
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
                     'Email',
-                    style: GoogleFonts.getFont(
-                      'Nunito Sans',
+                    style: GoogleFonts.nunitoSans(
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                     ),
                   ),
                 ),
                 TextFormField(
-                  onChanged: (value) => email = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter your email";
-                    } else {
-                      return null;
-                    }
-                  },
+                  controller: _emailController,
+                  validator:
+                      (value) => value!.isEmpty ? "Enter your email" : null,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    labelText: "enter your email",
-                    labelStyle: GoogleFonts.getFont(
-                      "Nunito Sans",
-                      fontSize: 14,
-                      letterSpacing: 0.1,
-                    ),
+                    labelText: "Enter your email",
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Image.asset(
@@ -162,41 +143,29 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
+
+                /// Password Field
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
                     'Password',
-                    style: GoogleFonts.getFont(
-                      'Nunito Sans',
+                    style: GoogleFonts.nunitoSans(
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                     ),
                   ),
                 ),
                 TextFormField(
-                  onChanged: (value) => password = value,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter your password";
-                    } else {
-                      print('password: $value');
-                      return null;
-                    }
-                  },
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  validator:
+                      (value) => value!.isEmpty ? "Enter your password" : null,
                   decoration: InputDecoration(
-                    fillColor: Colors.white,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    labelText: "enter your Password",
-                    labelStyle: GoogleFonts.getFont(
-                      "Nunito Sans",
-                      fontSize: 14,
-                      letterSpacing: 0.1,
-                    ),
+                    labelText: "Enter your password",
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Image.asset(
@@ -205,29 +174,36 @@ class RegisterScreen extends StatelessWidget {
                         height: 20,
                       ),
                     ),
-                    suffixIcon: Icon(Icons.visibility),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(height: 20),
+
+                /// Register Button
                 InkWell(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      registerUser(context); // Pass context properly
-                    } else {
-                      print('failed');
+                      registerUser(context);
                     }
                   },
-
                   child: Container(
                     height: 50,
                     width: 320,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       gradient: LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 13, 40, 218),
-                          Color.fromARGB(9, 45, 69, 114),
-                        ],
+                        colors: [Color(0xFF0D28DA), Color(0x1F2D4572)],
                       ),
                     ),
                     child: Stack(
@@ -240,7 +216,6 @@ class RegisterScreen extends StatelessWidget {
                             child: Container(
                               width: 60,
                               height: 60,
-                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   width: 12,
@@ -259,43 +234,49 @@ class RegisterScreen extends StatelessWidget {
                             child: Container(
                               width: 60,
                               height: 60,
-                              clipBehavior: Clip.antiAlias,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   width: 12,
-                                  color: Color.fromARGB(255, 235, 232, 232),
+                                  color: Color(0xFFECECEC),
                                 ),
                               ),
                             ),
                           ),
                         ),
                         Center(
-                          child: Text(
-                            "Sign Up",
-                            style: GoogleFonts.getFont(
-                              'Lato',
-                              color: const Color.fromARGB(255, 22, 1, 1),
-                              fontSize: 18,
-                            ),
-                          ),
+                          child:
+                              _isLoading
+                                  ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : Text(
+                                    "Sign Up",
+                                    style: GoogleFonts.lato(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 SizedBox(height: 10),
+
+                /// Sign in prompt
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Do you have an Account?"),
+                    Text("Already have an account?"),
                     InkWell(
-                      onTap:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginScreen(),
-                            ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
                           ),
+                        );
+                      },
                       child: Text(
                         " Sign In",
                         style: TextStyle(
