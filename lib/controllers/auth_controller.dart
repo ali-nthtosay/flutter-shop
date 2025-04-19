@@ -1,28 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Register new user
   Future<String> registerNewUser(
     String email,
     String fullName,
     String password,
   ) async {
-    String response = "something went wrong";
+    String response = "Something went wrong";
     try {
-      // Create user
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // Set display name (username)
-      await userCredential.user!.updateDisplayName(fullName);
-      await userCredential.user!.reload(); // reload to apply changes
+      await _firestore.collection('buyers').doc(userCredential.user!.uid).set({
+        'fullname': fullName,
+        'email': email,
+        'profileImage': "",
+        'uid': userCredential.user!.uid,
+        'pinCode': "",
+        'locality': "",
+        'city': "",
+      });
 
       response = "success";
     } catch (e) {
       print("Registration error: $e");
-      return response;
+      response = e.toString();
     }
+
     return response;
+  }
+
+  // Login user
+  Future<String> loginUser(String email, String password) async {
+    String res = 'Something went wrong';
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      res = "success";
+    } catch (e) {
+      print("Login error: $e");
+      res = e.toString();
+    }
+
+    return res;
   }
 }

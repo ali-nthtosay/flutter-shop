@@ -5,11 +5,36 @@ import 'package:google_fonts/google_fonts.dart';
 
 class RegisterScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  // create new user
   final AuthController _authController = AuthController();
   late String email;
   late String fullName;
   late String password;
+
+  registerUser(BuildContext context) async {
+    String response = await _authController.registerNewUser(
+      email,
+      fullName,
+      password,
+    );
+
+    if (response == "success") {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Congrats')));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response)));
+    }
+  }
+
+  ///
 
   @override
   Widget build(BuildContext context) {
@@ -187,17 +212,12 @@ class RegisterScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      print('correct');
-
-                      _authController.registerNewUser(
-                        email,
-                        fullName,
-                        password,
-                      );
+                      registerUser(context); // Pass context properly
                     } else {
                       print('failed');
                     }
                   },
+
                   child: Container(
                     height: 50,
                     width: 320,

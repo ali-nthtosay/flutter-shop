@@ -1,12 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/auth_controller.dart';
 import 'package:flutter_application_1/views/screens/Login_Screen.dart';
+import 'package:flutter_application_1/views/screens/main_screen.dart';
 import 'package:flutter_application_1/views/screens/register_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthController _authController = AuthController();
+
   late String email;
   late String password;
+
+  loginUser(BuildContext context) async {
+    String res = await _authController.loginUser(email, password);
+    if (res == 'success') {
+      Future.delayed(Duration.zero, () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('You are logged in')));
+      });
+      print('logged in');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
+      print(res);
+    }
+  }
 
   LoginScreen({super.key});
 
@@ -45,51 +68,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 Image.asset('assets/images/login.png', height: 200, width: 200),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    "Username",
-                    style: GoogleFonts.getFont(
-                      'Nunito Sans',
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-                TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter your Username";
-                    } else {
-                      return null;
-                    }
-                  },
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Image.asset(
-                        "assets/images/username.png",
-                        width: 20,
-                        height: 20,
-                      ),
-                    ),
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    labelText: "enter your Username",
-                    labelStyle: GoogleFonts.getFont(
-                      "Nunito Sans",
-                      fontSize: 14,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
+
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -188,8 +167,7 @@ class LoginScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     if (_formKey.currentState!.validate()) {
-                      print('email');
-                      print('password');
+                      loginUser(context);
                     } else {
                       print('failed');
                     }
