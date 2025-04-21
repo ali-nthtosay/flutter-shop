@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/category_controller.dart';
 import 'package:flutter_application_1/views/screens/auth_screens/register_screen.dart';
 import 'package:flutter_application_1/views/screens/main_screen.dart';
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,13 +29,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: MainScreen(),
+      initialBinding: BindingsBuilder(() {
+        Get.put<CategoryController>(CategoryController());
+      }),
     );
   }
 }

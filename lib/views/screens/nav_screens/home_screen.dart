@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/screens/widgets/banner_widget.dart';
+import 'package:flutter_application_1/views/screens/widgets/category_item.dart';
 import 'package:flutter_application_1/views/screens/widgets/header_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,6 +8,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Column(children: [HeaderWidget(), BannerWidget()]));
+    return Scaffold(
+      body: Column(children: [HeaderWidget(), BannerWidget(), CategoryItem()]),
+    );
   }
 }
